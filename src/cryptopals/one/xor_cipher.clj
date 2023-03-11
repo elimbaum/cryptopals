@@ -1,5 +1,6 @@
 (ns cryptopals.one.xor-cipher
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [cryptopals.one.hex-b64 :refer :all]))
 
 ;; english letter frequencies to the nearest tenth of a percent,
 ;; per wikipedia ;)
@@ -47,15 +48,10 @@
        (map key)
        (apply str)))
 
-(println etaoin-shrdlu "!")
-
 (defn build-distribution
   "Brute force a single-byte XOR key, assuming english text (or similarly
    distributed)"
   [s]
-;;   over all keys, find max score, where score is closeness to known distr
-;;   alternatively, find distr, then extract key which leads to best
-;;   need to write similartiy metric
   (let [filtered-txt
         (->> s
              (filter #(Character/isLetter %))
@@ -91,15 +87,27 @@
   )
   
 
-
 (def alice-distr
   (build-distribution (slurp "test/etc/alice-ch1.txt")))
 
 (map-sq-error alice-distr letter-freq)
 (map-sq-error letter-freq alice-distr)
 
-(def alien-text "zzyzyzyzyzyyxyxzvzbzcyzyvzyvzyvz")
-(def less-alien-text "ebaetialgosotsalpqpmfnmenwnreottpla")
+;; (def enc-dist
+;;   (build-distribution
+;;    (b64decode-str (slurp "test/etc/xor-encrypted-alice.b64"))))
 
-(map-sq-error letter-freq (build-distribution alien-text))
-(map-sq-error letter-freq (build-distribution less-alien-text))
+;; issue: we can't build distribution and then find xor key, because then we
+;; don't know about symbols and uppercase/lowercase. instead, will need to
+;; just try every key.
+
+(defn xor-encrypt
+  "xor-encrypt s with single-byte key k"
+  [k s]
+  (->> k
+       (int)
+       (repeat)
+       (map bit-xor (.getBytes s))
+       (byte-array)
+       (String.)))
+

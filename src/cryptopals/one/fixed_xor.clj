@@ -6,7 +6,7 @@
 
 
 (defn fixed-xor
-  "bitwise xor of a and b"
+  "bitwise xor (as hexstring) of a and b (both as hexstring)"
   [a-hex b-hex]
   (let [a (fromHex a-hex)
         b (fromHex b-hex)]
