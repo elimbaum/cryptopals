@@ -23,18 +23,34 @@
         less-alien-text "ebaetialgosotsalpqpmfnmenwnreottpla"]
     (is (>
          (map-sq-error letter-freq (build-distribution alien-text))
-         0.5))
+         2))
     (is (<
          (map-sq-error letter-freq (build-distribution less-alien-text))
-         0.1))))
+         1))))
   
   (testing "xor encrypt"
     (let [s "the quick brown fox!"]
-      (is (= s (xor-encrypt 18 (xor-encrypt 18 s))))
+      (is (= s (xor-crypt 18 (xor-crypt 18 s))))
       (is (= s (->> s
-                    (xor-encrypt 31)
-                    (xor-encrypt 71)
-                    (xor-encrypt 31)
-                    (xor-encrypt 71)))))))
+                    (xor-crypt 31)
+                    (xor-crypt 71)
+                    (xor-crypt 31)
+                    (xor-crypt 71))))))
+  
+  (testing "auto decrypt"
+    (let [challenge-ciphertext (->>
+                                "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+                                (fromHex)
+                                (String.))
+          challenge-keys (extract-xor-key challenge-ciphertext)
 
-
+          sentence-ciphertext (->>
+                               "test/etc/xor-encrypted-sentence.b64"
+                               (slurp)
+                               (b64decode-str))
+          sentence-keys (extract-xor-key sentence-ciphertext)
+          ]
+      (is (some #(.contains % "bacon")
+           (map #(xor-crypt % challenge-ciphertext) challenge-keys)))
+      (is (some #(.contains % "fox")
+                (map #(xor-crypt % sentence-ciphertext) sentence-keys))))))
