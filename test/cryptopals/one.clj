@@ -50,7 +50,11 @@
                                (b64decode-str))
           sentence-keys (extract-xor-key sentence-ciphertext)
           ]
-      (is (some #(.contains % "bacon")
-           (map #(xor-crypt % challenge-ciphertext) challenge-keys)))
-      (is (some #(.contains % "fox")
-                (map #(xor-crypt % sentence-ciphertext) sentence-keys))))))
+      (is (some #(-> %
+                     (xor-crypt challenge-ciphertext)
+                     (.contains "bacon"))
+                challenge-keys))
+      (is (some #(-> %
+                     (xor-crypt sentence-ciphertext)
+                     (.contains "brown fox"))
+                sentence-keys)))))

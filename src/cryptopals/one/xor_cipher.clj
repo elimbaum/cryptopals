@@ -138,10 +138,14 @@
         all-errors)
 ))
 
-;; (def challenge-ciphertext 
-;;   (->>
-;;    "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-;;    (fromHex)
-;;    (String.)))
-;; (doseq [k (extract-xor-key challenge-ciphertext)]
-;;        (println (format "Key %3d: %s" k (xor-crypt k challenge-ciphertext))))
+(def challenge-ciphertext 
+  (->>
+   "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+   (fromHex)
+   (String.)))
+
+(let
+ [ks (extract-xor-key challenge-ciphertext)]
+  (zipmap ks (map #(xor-crypt % challenge-ciphertext) ks)))
+
+ 
