@@ -63,25 +63,15 @@
 
 (defn build-distribution
   "Brute force a single-byte XOR key, assuming english text (or similarly
-   distributed). Scale the resulting distribution by the proportional length of
-   the filtered distribution."
+   distributed). Scale the resulting distribution by the length of the original
+   text"
   [s]
-  (let [filtered-txt
-        (->> s
-             (string/lower-case)
-             (filter #(contains? letter-freq-with-spaces %))
-             (apply str)
-             ) 
-        
-        filtered-length (count filtered-txt) 
-        original-length (count s)
-
-        s-letter-counts
-        (frequencies filtered-txt)
+  (let [lowercase (string/lower-case s)
+        letter-counts (frequencies lowercase)
 
         rel-letter-freqs
-        (update-vals s-letter-counts
-                     #(double (/ % original-length)))]
+        (update-vals letter-counts
+                     #(double (/ % (count s))))]
     rel-letter-freqs))
 
 (defn sq [x] (* x x))
@@ -95,7 +85,8 @@
   [reference candidate]
   (let
    [;; these are all the keys we might possibly look for 
-    all-keys (concat (keys reference) (keys candidate))]
+    all-keys (concat (keys reference) (keys candidate))
+    penalty -0.25]
     (cond
       (zero? (count candidate)) ##Inf
       :else
@@ -103,7 +94,7 @@
       (apply +
            ;; ...square differences (default if missing to penalize chars not in
            ;; reference
-           (map #(sq (- (reference % 0) (candidate % 0))) all-keys))))
+           (map #(sq (- (reference % penalty) (candidate % 0))) all-keys))))
   )
   
 

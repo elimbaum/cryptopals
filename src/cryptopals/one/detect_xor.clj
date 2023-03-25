@@ -21,6 +21,7 @@
        )
 
 (hexstr-decrypt (all-hex-str 170))
+(hexstr-decrypt (all-hex-str 58))
 
 (apply min-key
  #((first %) :error)
