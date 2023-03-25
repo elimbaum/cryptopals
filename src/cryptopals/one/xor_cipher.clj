@@ -31,7 +31,20 @@
    \x 0.002
    \q 0.001
    \z 0.001})
-  
+
+
+(def average-english-word-length 5.1)
+
+(let 
+ [space-prob (/ 1 (+ 1 average-english-word-length))
+  letter-prob (- 1 space-prob)
+  scaled-letter-freqs (zipmap
+                       (keys letter-freq)
+                       (map #(* letter-prob %) (vals letter-freq)))] 
+  (def letter-freq-with-spaces
+    (merge {\space space-prob} scaled-letter-freqs)
+  ))
+
 
 (def etaoin-shrdlu
   (reduce (fn [r e] (str r (key e))) ""
@@ -55,9 +68,10 @@
   [s]
   (let [filtered-txt
         (->> s
-             (filter #(Character/isLetter %))
+             (string/lower-case)
+             (filter #(contains? letter-freq-with-spaces %))
              (apply str)
-             (string/lower-case)) 
+             ) 
         
         filtered-length (count filtered-txt) 
 
@@ -96,8 +110,8 @@
 (def alice-distr
   (build-distribution (slurp "test/etc/alice-ch1.txt")))
 
-(map-sq-error alice-distr letter-freq)
-(map-sq-error letter-freq alice-distr)
+(map-sq-error alice-distr letter-freq-with-spaces)
+(map-sq-error letter-freq-with-spaces alice-distr)
 
 ;; takes a while to decrypt:
 ;; (def alice-ciphertext (b64decode-str (slurp "test/etc/xor-encrypted-alice.b64")))
@@ -123,7 +137,7 @@
   (->> s
        (xor-crypt k)
        (build-distribution)
-       (map-sq-error letter-freq)))
+       (map-sq-error letter-freq-with-spaces)))
 
 (defn extract-xor-key
   [s]
