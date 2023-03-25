@@ -74,13 +74,14 @@
              ) 
         
         filtered-length (count filtered-txt) 
+        original-length (count s)
 
         s-letter-counts
         (frequencies filtered-txt)
 
         rel-letter-freqs
         (update-vals s-letter-counts
-                     #(double (/ % filtered-length)))]
+                     #(double (/ % original-length)))]
     rel-letter-freqs))
 
 (defn sq [x] (* x x))
@@ -91,19 +92,18 @@
    map format is `{key probability, ...}`.
    missing keys are assumed to have probability 0.
    "
-  [m1 m2]
+  [reference candidate]
   (let
-   [
-    ;; these are all the keys we might possibly look for
-    all-keys (concat (keys m1) (keys m2))
-    ;; penalize texts that miss letters
-    missing-penality -0.25] 
-   ;; sum of...
-    (apply +
-           ;; ...square differences (default 0 if missing)
-           (map #(sq (- (m1 % missing-penality) (m2 % missing-penality))) all-keys)
-           )
-    )
+   [;; these are all the keys we might possibly look for 
+    all-keys (concat (keys reference) (keys candidate))]
+    (cond
+      (zero? (count candidate)) ##Inf
+      :else
+      ;; sum of... 
+      (apply +
+           ;; ...square differences (default if missing to penalize chars not in
+           ;; reference
+           (map #(sq (- (reference % 0) (candidate % 0))) all-keys))))
   )
   
 
@@ -147,10 +147,12 @@
         min-error (apply min (vals all-errors))
         ]
     ;; uppercase/lowercase will probably have same score, so pull out all mins
-  (keep #(when
-          (= min-error (val %)) (key %))
-        all-errors)
-))
+    {:error min-error
+     :keys (keep #(when
+            (= min-error (val %)) (key %))
+          all-errors)
+    }
+    ))
 
 (def challenge-ciphertext 
   (->>
@@ -159,7 +161,9 @@
    (String.)))
 
 (let
- [ks (extract-xor-key challenge-ciphertext)]
-  (zipmap ks (map #(xor-crypt % challenge-ciphertext) ks)))
+ [res (extract-xor-key challenge-ciphertext)
+  k (res :keys)]
+  (println res)
+  (zipmap k (map #(xor-crypt % challenge-ciphertext) k)))
 
  

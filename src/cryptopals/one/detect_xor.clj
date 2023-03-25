@@ -12,12 +12,16 @@
 (defn hexstr-decrypt
   [hs]
   (let [s (String. (fromHex hs))
-        k (last (extract-xor-key s))] 
-    (xor-crypt k s) 
-    ))
+        extraction (extract-xor-key s)
+        k (first (extraction :keys))] 
+    [extraction (xor-crypt k s)]))
 
-;; (doseq [[i dec] (map-indexed vector (map hexstr-decrypt all-hex-str))]
-;;   (println i dec)
-;;   )
+(doseq [[i dec] (map-indexed vector (map hexstr-decrypt all-hex-str))]
+  (println i ((first dec) :error))
+       )
 
 (hexstr-decrypt (all-hex-str 170))
+
+(apply min-key
+ #((first %) :error)
+ (map hexstr-decrypt all-hex-str))

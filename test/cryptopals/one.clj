@@ -23,10 +23,10 @@
         less-alien-text "ebaetialgosotsalpqpmfnmenwnreottpla"]
     (is (>
          (map-sq-error letter-freq (build-distribution alien-text))
-         2))
+         0.5))
     (is (<
          (map-sq-error letter-freq (build-distribution less-alien-text))
-         1))))
+         0.1))))
   
   (testing "xor encrypt"
     (let [s "the quick brown fox!"]
@@ -42,13 +42,13 @@
                                 "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
                                 (fromHex)
                                 (String.))
-          challenge-keys (extract-xor-key challenge-ciphertext)
+          challenge-keys ((extract-xor-key challenge-ciphertext) :keys)
 
           sentence-ciphertext (->>
                                "test/etc/xor-encrypted-sentence.b64"
                                (slurp)
                                (b64decode-str))
-          sentence-keys (extract-xor-key sentence-ciphertext)
+          sentence-keys ((extract-xor-key sentence-ciphertext) :keys)
           ]
       (is (some #(-> %
                      (xor-crypt challenge-ciphertext)
