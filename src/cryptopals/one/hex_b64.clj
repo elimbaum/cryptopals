@@ -24,6 +24,9 @@
 (defn toHex [s]
   (.formatHex hex-formatter s))
 
+(defn strToHex [s]
+  (.formatHex hex-formatter (.getBytes s)))
+
 (defn hex-b64
   "convert hexstring to b64 string"
   [h]

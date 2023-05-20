@@ -71,36 +71,33 @@
 
 (deftest repeating-xor
   (testing "repeating key xor"
-    (let [key "ICE"
+    (let [key-hex (strToHex "ICE")
           plaintext "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
           ciphertext-hex "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"]
       ; provided example
-      (is (= ciphertext-hex (toHex (.getBytes (repeating-key-xor key plaintext)))))
+      (is (= ciphertext-hex (strToHex (repeating-key-xor key-hex plaintext))))
       ; should be reversible
       (is (= plaintext (->>
                         plaintext
-                        (repeating-key-xor key)
-                        (repeating-key-xor key))))
+                        (repeating-key-xor key-hex)
+                        (repeating-key-xor key-hex))))
       (is (= (->>
               "my name is eli baum"
-              (repeating-key-xor "key0")
-              (.getBytes)
-              (toHex))
+              (repeating-key-xor (strToHex "key0"))
+              (strToHex))
              "061c595e0a081c1002165955070c59520a1014"))
       (is (= (->>
               "my name is eli baum"
-              (repeating-key-xor "truck")
-              (.getBytes)
-              (toHex))
+              (repeating-key-xor (strToHex "truck"))
+              (strToHex))
              "190b550d0a1917550a185417190a4b1613000e"))
       (is (= (->>
               "test"
-              (repeating-key-xor "maybe the key is really long")
-              (.getBytes)
-              (toHex))
+              (repeating-key-xor (strToHex "maybe the key is really long"))
+              (strToHex))
              "19040a16"))
       ; should match xor-crypt for a single-byte key
       (let [s "the quick brown fox is being encrypted with a 1 byte key..."
             k "q"]
-        (is (= (repeating-key-xor k s)
+        (is (= (repeating-key-xor (strToHex k) s)
                (xor-crypt (first k) s)))))))
