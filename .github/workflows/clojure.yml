@@ -12,8 +12,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    
     - uses: actions/checkout@v3
+    
+    - name: Set up Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+    
     - name: Install dependencies
       run: lein deps
+      
     - name: Run tests
       run: lein test
