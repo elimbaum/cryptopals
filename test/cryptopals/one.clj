@@ -70,7 +70,7 @@
     )
 
 (deftest repeating-xor
-  (testing "repeating key xor"
+  (testing "repeating key xor encryption"
     (let [key-hex (strToHex "ICE")
           plaintext "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
           ciphertext-hex "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"]
@@ -100,4 +100,11 @@
       (let [s "the quick brown fox is being encrypted with a 1 byte key..."
             k "q"]
         (is (= (repeating-key-xor (strToHex k) s)
-               (xor-crypt (first k) s)))))))
+               (xor-crypt (first k) s))))))
+  (testing "hamming distance"
+    ;; different length, won't work
+    (is (thrown? java.lang.AssertionError (hamming-dist "abc" "ab")))
+    ;; provided test case
+    (is (= 37 (hamming-dist "this is a test" "wokka wokka!!!")))) 
+  
+  (testing "breaking repeating key xor"))

@@ -6,7 +6,7 @@
 
 (defn fixed-xor
   [a b]
-  (byte-array (map bit-xor (vec a) (vec b))))
+  (byte-array (map bit-xor a b)))
 
 (defn fixed-xor-hex
   "bitwise xor (as hexstring) of a and b (both as hexstring)"

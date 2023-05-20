@@ -1,4 +1,5 @@
 (ns cryptopals.one.repeating-key-xor
+  (:import java.lang.Long)
   (:require [cryptopals.one.fixed-xor :refer :all])
   (:require [cryptopals.one.hex-b64 :refer :all]))
 
@@ -21,3 +22,15 @@
          (reduce concat)
          (byte-array)
          (String.))))
+
+;; 1.6: breaking repeating key xor
+
+(defn hamming-dist
+  "hamming distance between two equal-length strings"
+  [s t]
+  (do
+    (assert (= (count s) (count t)) "strings have different lengths")
+    (apply + (map #(Integer/bitCount %) (fixed-xor (.getBytes s) (.getBytes t))))
+  )
+)
+
