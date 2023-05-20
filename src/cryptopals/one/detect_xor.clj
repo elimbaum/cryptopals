@@ -16,13 +16,17 @@
         k (first (extraction :keys))] 
     [extraction (xor-crypt k s)]))
 
-(doseq [[i dec] (map-indexed vector (map hexstr-decrypt all-hex-str))]
-  (println i ((first dec) :error))
-       )
+;; (doseq [[i dec] (map-indexed vector (map hexstr-decrypt all-hex-str))]
+;;   (println i ((first dec) :error))
+;;        )
 
-(hexstr-decrypt (all-hex-str 170))
-(hexstr-decrypt (all-hex-str 58))
+;; (hexstr-decrypt (all-hex-str 170))
+;; (hexstr-decrypt (all-hex-str 58))
 
-(apply min-key
- #((first %) :error)
- (map hexstr-decrypt all-hex-str))
+(defn find-xor-line
+  "give a bunch of lines as hexstrings, find the one that is most likely to be 
+   xor-encrypted (based on minimum-error letter frequency distribution)"
+  [hex-lines]
+  (apply min-key
+         #((first %) :error)
+         (map hexstr-decrypt hex-lines)))

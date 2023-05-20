@@ -154,7 +154,7 @@
 (let
  [res (extract-xor-key challenge-ciphertext)
   k (res :keys)]
-  (println res)
+  ;; (println res)
   (zipmap k (map #(xor-crypt % challenge-ciphertext) k)))
 
  

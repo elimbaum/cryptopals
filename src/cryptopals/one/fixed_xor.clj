@@ -4,11 +4,14 @@
             [clojure.test :refer [is are]]
             [cryptopals.one.hex-b64 :refer :all]))
 
-
 (defn fixed-xor
+  [a b]
+  (byte-array (map bit-xor (vec a) (vec b))))
+
+(defn fixed-xor-hex
   "bitwise xor (as hexstring) of a and b (both as hexstring)"
   [a-hex b-hex]
   (let [a (fromHex a-hex)
         b (fromHex b-hex)]
-    (toHex (byte-array (map bit-xor a b)))))
+    (toHex (fixed-xor a b))))
 
