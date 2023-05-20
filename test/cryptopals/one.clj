@@ -88,6 +88,12 @@
               (toHex))
              "061c595e0a081c1002165955070c59520a1014"))
       (is (= (->>
+              "my name is eli baum"
+              (repeating-key-xor "truck")
+              (.getBytes)
+              (toHex))
+             "190b550d0a1917550a185417190a4b1613000e"))
+      (is (= (->>
               "test"
               (repeating-key-xor "maybe the key is really long")
               (.getBytes)
