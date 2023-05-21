@@ -94,5 +94,5 @@
         k (apply str (extract-repeating-xor-key ks ciphertext))
         decrypt (repeating-key-xor (strToHex k) ciphertext)]
     (print (format "== Key is: '%s' (len %d) ==\n" k ks))
-    (print decrypt)
+    ;; (print decrypt)
     decrypt))

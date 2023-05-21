@@ -1,11 +1,12 @@
 (ns cryptopals.one
   (:require [clojure.test :refer :all]
+            [clojure.string :as string]
             [cryptopals.one.hex-b64 :refer :all]
             [cryptopals.one.fixed-xor :refer :all]
             [cryptopals.one.xor-cipher :refer :all]
             [cryptopals.one.detect-xor :refer :all]
             [cryptopals.one.repeating-key-xor :refer :all]
-            [clojure.string :as string]))
+            [cryptopals.one.ecb :refer :all]))
 
 (deftest hex-b64-utilities
   (is (= "ZXhhbXBsZQ==" (hex-b64 (b64-hex "ZXhhbXBsZQ=="))))
@@ -13,7 +14,7 @@
 
 (deftest bytewise-xor
   (is (= (fixed-xor-hex "1c0111001f010100061a024b53535009181c"
-                    "686974207468652062756c6c277320657965")
+                        "686974207468652062756c6c277320657965")
          "746865206b696420646f6e277420706c6179")))
 
 (deftest xor-ciper
@@ -60,15 +61,14 @@
                      (xor-crypt sentence-ciphertext)
                      (.contains "brown fox"))
                 sentence-keys)))))
-  
-  (deftest xor-detect
-    (testing "xor detection"
-      (let [xor-line (find-xor-line all-hex-str)]
+
+(deftest xor-detect
+  (testing "xor detection"
+    (let [xor-line (find-xor-line all-hex-str)]
         ;; correct line contains this string
-        (is (.contains (last xor-line) "party is jumping"))
+      (is (.contains (last xor-line) "party is jumping"))
         ;; and should use a key of 53
-        (is (= '(53) ((first xor-line) :keys)))))
-    )
+      (is (= '(53) ((first xor-line) :keys))))))
 
 (deftest repeating-xor
   (testing "repeating key xor encryption"
@@ -106,8 +106,16 @@
     ;; different length, won't work
     (is (thrown? java.lang.AssertionError (hamming-dist "abc" "ab")))
     ;; provided test case
-    (is (= 37 (hamming-dist "this is a test" "wokka wokka!!!")))) 
-  
+    (is (= 37 (hamming-dist "this is a test" "wokka wokka!!!"))))
+
   (testing "breaking repeating key xor"
     (is (= 29 (ffirst (sort-by second key-edit-dist))))
     (is (string/includes? (run-xor-extract) "funky"))))
+
+(deftest ecb
+  (testing "normal encrypt/decrypt"
+    (let [message "testing 1234 secret message to be encrypted"
+          k "shh!"]
+      (is (= message (decrypt (encrypt message k) k)))))
+  (testing "raw key decrypt"
+    (is (string/includes? test-message "funky"))))

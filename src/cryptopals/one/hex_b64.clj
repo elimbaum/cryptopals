@@ -10,6 +10,9 @@
 (defn b64encode [to-encode]
   (.encodeToString (Base64/getEncoder) (.getBytes to-encode)))
 
+(defn b64encode-bytes [to-encode]
+  (.encodeToString (Base64/getEncoder) to-encode))
+
 (defn b64decode [to-decode]
   (.decode (Base64/getDecoder) to-decode))
 
