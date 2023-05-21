@@ -14,4 +14,3 @@
   (let [a (fromHex a-hex)
         b (fromHex b-hex)]
     (toHex (fixed-xor a b))))
-

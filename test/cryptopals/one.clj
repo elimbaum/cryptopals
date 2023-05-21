@@ -4,7 +4,8 @@
             [cryptopals.one.fixed-xor :refer :all]
             [cryptopals.one.xor-cipher :refer :all]
             [cryptopals.one.detect-xor :refer :all]
-            [cryptopals.one.repeating-key-xor :refer :all]))
+            [cryptopals.one.repeating-key-xor :refer :all]
+            [clojure.string :as string]))
 
 (deftest hex-b64-utilities
   (is (= "ZXhhbXBsZQ==" (hex-b64 (b64-hex "ZXhhbXBsZQ=="))))
@@ -107,4 +108,6 @@
     ;; provided test case
     (is (= 37 (hamming-dist "this is a test" "wokka wokka!!!")))) 
   
-  (testing "breaking repeating key xor"))
+  (testing "breaking repeating key xor"
+    (is (= 29 (ffirst (sort-by second key-edit-dist))))
+    (is (string/includes? (run-xor-extract) "funky"))))

@@ -39,6 +39,10 @@ Can we use the length ratio (how many good characters vs bad characters to help)
 
 Not particularly fast, so may need to revisit with some profiling later.
 
+Adding spaces to the frequency list actually also helps a lot. This also more accurately captures the intuition of what english text should look like.
+
 ## 4: XOR Detection
 
 We can kinda already do this, but ideally want our xor key extraction from the last round to _also return the score_, so given a bunch of ciphertexts, we can find the most likely xor-decryption.
+
+## 5/6: Repeated Key XOR
