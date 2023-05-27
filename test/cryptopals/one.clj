@@ -118,4 +118,7 @@
           k "shh!"]
       (is (= message (decrypt (encrypt message k) k)))))
   (testing "raw key decrypt"
-    (is (string/includes? test-message "funky"))))
+    (is (string/includes? test-message "funky")))
+  
+  (testing "detection"
+    (is (string/starts-with? likely-ecb-ciphertext "d8806197"))))
