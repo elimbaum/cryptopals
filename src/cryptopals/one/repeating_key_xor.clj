@@ -1,6 +1,7 @@
 (ns cryptopals.one.repeating-key-xor
   (:import java.lang.Long)
   (:require [clojure.string :as string]
+            [cryptopals.core :refer :all]
             [cryptopals.one.fixed-xor :refer :all]
             [cryptopals.one.hex-b64 :refer :all]
             [cryptopals.one.xor-cipher :refer :all]))
@@ -31,15 +32,15 @@
   "hamming distance between two equal-length strings"
   [s t]
   (do
-    (assert (= (count s) (count t)) "strings have different lengths")
+    (let [cs (count s)
+          ct (count t)]
+      (assert (= cs ct)
+              (format "strings have different lengths: %d, %d" cs ct))
     (apply + (map #(Integer/bitCount %)
-                  (fixed-xor (.getBytes s) (.getBytes t))))))
+                  (fixed-xor (.getBytes s) (.getBytes t)))))))
 
-(def ciphertext
-  (-> "test/etc/1.6.b64"
-      (slurp)
-      (string/replace #"\n" "")
-      (b64decode-str)))
+(def ciphertext-6
+  (String. (load-b64-file "test/etc/1.6.b64")))
 
 (def keysize-limits '(2 40))
 
@@ -62,7 +63,7 @@
   (apply merge
          (for [ks (apply range keysize-limits)]
          ;; for each key size ks,
-           (let [norm-ham (->> ciphertext
+           (let [norm-ham (->> ciphertext-6
                                (partition ks)
                                (map (partial apply str))
                                (pairwise)
@@ -91,8 +92,8 @@
 (defn run-xor-extract
   []
   (let [ks (first (apply min-key second key-edit-dist))
-        k (apply str (extract-repeating-xor-key ks ciphertext))
-        decrypt (repeating-key-xor (strToHex k) ciphertext)]
+        k (apply str (extract-repeating-xor-key ks ciphertext-6))
+        decrypt (repeating-key-xor (strToHex k) ciphertext-6)]
     (print (format "== Key is: '%s' (len %d) ==\n" k ks))
     ;; (print decrypt)
     decrypt))
