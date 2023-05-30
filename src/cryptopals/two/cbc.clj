@@ -1,5 +1,5 @@
 (ns cryptopals.two.cbc
-  (:require [cryptopals.one.ecb]
+  (:require [cryptopals.one.ecb :as ecb]
             [cryptopals.core :refer :all]
             [cryptopals.two.pkcs :as pkcs]
             [cryptopals.one.fixed-xor :refer :all]))
@@ -12,10 +12,18 @@
                     (map byte-array))
         raw-decrypt (->> blocks
                          (map #(ecb/decrypt % key :raw-key)))
-        xor-stream (apply conj [iv] blocks)]
+        ;; prepend IV to cipher stream
+        xor-stream (into [iv] blocks)]
     ;; (print xor-stream)
-    (map fixed-xor raw-decrypt xor-stream)))
+
+    (->> xor-stream
+         ;; xor cipher blocks with raw decryption
+         (map fixed-xor raw-decrypt)
+         ;; concat the blocks together
+         (apply concat)
+         ;; and create an array
+         (byte-array))))
 
 (def ciphertext-10 (load-b64-file "test/etc/10.b64"))
 
-(String. (byte-array (apply concat (decrypt ciphertext-10 "YELLOW SUBMARINE" (byte-array 16)))))
+(def plaintext-10 (decrypt ciphertext-10 "YELLOW SUBMARINE" (repeat 16 0)))

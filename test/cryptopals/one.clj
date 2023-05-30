@@ -6,7 +6,7 @@
             [cryptopals.one.xor-cipher :refer :all]
             [cryptopals.one.detect-xor :refer :all]
             [cryptopals.one.repeating-key-xor :refer :all]
-            [cryptopals.one.ecb :refer :all]))
+            [cryptopals.one.ecb :as ecb]))
 
 (deftest hex-b64-utilities
   (is (= "ZXhhbXBsZQ==" (hex-b64 (b64-hex "ZXhhbXBsZQ=="))))
@@ -114,11 +114,14 @@
 
 (deftest ecb
   (testing "normal encrypt/decrypt"
-    (let [message "testing 1234 secret message to be encrypted"
+    (let [message "testing 1234 secret message to be encrypted$$$$$"
           k "shh!"]
-      (is (= message (decrypt (encrypt message k) k)))))
+      (is (= message (-> message
+                         (ecb/encrypt k)
+                         (ecb/decrypt k)
+                         (String.))))))
   (testing "raw key decrypt"
-    (is (string/includes? test-message "funky")))
-  
+    (is (string/includes? (String. ecb/test-message) "funky")))
+
   (testing "detection"
-    (is (string/starts-with? likely-ecb-ciphertext "d8806197"))))
+    (is (string/starts-with? ecb/likely-ecb-ciphertext "d8806197"))))
