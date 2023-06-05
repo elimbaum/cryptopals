@@ -6,7 +6,8 @@
             [cryptopals.one.xor-cipher :refer :all]
             [cryptopals.one.detect-xor :refer :all]
             [cryptopals.one.repeating-key-xor :refer :all]
-            [cryptopals.one.ecb :as ecb]))
+            [cryptopals.one.ecb :as ecb]
+            [cryptopals.two.pkcs :as pkcs]))
 
 (deftest hex-b64-utilities
   (is (= "ZXhhbXBsZQ==" (hex-b64 (b64-hex "ZXhhbXBsZQ=="))))
@@ -114,11 +115,13 @@
 
 (deftest ecb
   (testing "normal encrypt/decrypt"
-    (let [message "testing 1234 secret message to be encrypted$$$$$"
+    (let [message "testing 1234 secret message to be encrypted"
+          padded (pkcs/pkcs-pad-multiple (.getBytes message))
           k "shh!"]
-      (is (= message (-> message
+      (is (= message (-> padded
                          (ecb/encrypt k)
                          (ecb/decrypt k)
+                        ;;  this should strip padding instead
                          (String.))))))
   (testing "raw key decrypt"
     (is (string/includes? (String. ecb/test-message) "funky")))

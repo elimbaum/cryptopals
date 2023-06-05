@@ -13,3 +13,8 @@
        (slurp)
        (string/replace #"\n" "")
        (b64decode)))
+
+(defn b
+  "convert to bytes"
+  [s]
+  (.getBytes s))

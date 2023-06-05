@@ -24,6 +24,11 @@
          ;; and create an array
          (byte-array))))
 
+;; (defn encrypt
+;;   "encrypt an AES-CBC message"
+;;   [plaintext key iv]
+;;   (let [blocks (->> (partition))]))
+
 (def ciphertext-10 (load-b64-file "test/etc/10.b64"))
 
 (def plaintext-10 (decrypt ciphertext-10 "YELLOW SUBMARINE" (repeat 16 0)))

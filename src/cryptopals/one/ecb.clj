@@ -38,9 +38,8 @@
     (.init cipher mode key-spec)
     cipher))
 
-(defn encrypt [text key]
-  (let [bytes (.getBytes text)
-        cipher (get-cipher Cipher/ENCRYPT_MODE key)]
+(defn encrypt [bytes key]
+  (let [cipher (get-cipher Cipher/ENCRYPT_MODE key)]
     (.doFinal cipher bytes)))
 
 (defn decrypt
